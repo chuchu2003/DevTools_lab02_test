@@ -10,7 +10,7 @@ namespace Wintellect.PowerCollections
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class Stack<T> : IEnumerable<T>
-    {
+    
         private T[] Array; // stack
         /// <summary>
         /// Max count of elements that stack can contain
