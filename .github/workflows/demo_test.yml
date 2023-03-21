@@ -27,7 +27,7 @@ jobs:
       
     - name: Build
       run: dotnet build --no-restore
-      working-directory: PowerCollections
+      working-directory: PowerCollections\PowerCollections
       
     - name: Run tests
       run: dotnet test --no-build --verbosity normal
