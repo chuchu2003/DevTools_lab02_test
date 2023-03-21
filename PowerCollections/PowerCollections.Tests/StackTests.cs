@@ -27,7 +27,7 @@ namespace Wintellect.PowerCollections.Tests
         {
             Stack<int> stack = new Stack<int>(2);
             stack.Push(1);
-            Assert.AreEqual(3, stack.Count);
+            Assert.AreEqual(1, stack.Count);
         }
 
         [TestMethod]
