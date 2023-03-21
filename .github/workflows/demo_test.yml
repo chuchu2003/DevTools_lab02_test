@@ -31,4 +31,4 @@ jobs:
       
     - name: Run tests
       run: dotnet test --no-build --verbosity normal PowerCollections.Tests.csproj
-      working-directory: PowerCollections
+      working-directory: PowerCollections\PowerCollections.Tests
