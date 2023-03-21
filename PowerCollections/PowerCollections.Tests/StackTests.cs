@@ -63,7 +63,7 @@ namespace Wintellect.PowerCollections.Tests
             Stack<int> stack = new Stack<int>(3);
             stack.Push(2);
             stack.Push(9);
-            stack.Push(1);
+            stack.Push(7);
             Assert.AreEqual(7, stack.Top());
         }
 
