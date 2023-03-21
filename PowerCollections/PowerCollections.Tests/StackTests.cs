@@ -72,7 +72,7 @@ namespace Wintellect.PowerCollections.Tests
         {
             Stack<int> stack = new Stack<int>(3);
             IEnumerator numerator = stack.GetEnumerator();
-            stack.Push(3);
+            stack.Push(5);
             stack.Push(2);
             stack.Push(1);
             numerator.MoveNext();
