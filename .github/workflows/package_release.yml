@@ -23,7 +23,7 @@ jobs:
         dotnet-version: 6.0.x
         
     - name: Add package
-      run: dotnet pack -c Release PowerColections/PowerCollections.csproj
+      run: dotnet pack -c Release "*\*.csproj"
       working-directory: PowerCollections
       
     - name: Publish package
