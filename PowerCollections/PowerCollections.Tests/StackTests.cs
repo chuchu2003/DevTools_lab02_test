@@ -26,7 +26,7 @@ namespace Wintellect.PowerCollections.Tests
         public void AfterPushItemStackIsNotEmpty()
         {
             Stack<int> stack = new Stack<int>(2);
-            stack.Push(1);
+            stack.Push(0);
             Assert.AreEqual(1, stack.Count);
         }
 
