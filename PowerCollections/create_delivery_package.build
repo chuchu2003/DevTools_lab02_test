@@ -1,0 +1,75 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Import Project="PowerCollections\PowerCollections.csproj"/>
+	<PropertyGroup>
+		<Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+		<BreakOnTestsFail Condition="'$(BreakOnTestsFail)' == ''">false</BreakOnTestsFail>
+		<IncludeSrc Condition="'$(IncludeSrc)' == ''">true</IncludeSrc>
+		<BuildNumber Condition="Exists('BuildNumber.txt')">$([System.IO.File]::ReadAllText('BuildNumber.txt'))</BuildNumber>
+		<BuildNumber Condition="!Exists('BuildNumber.txt')">0</BuildNumber>
+	</PropertyGroup>
+
+	<Target Name="Build" DependsOnTargets="BuildProject;BuildDocs;PerformeTests">
+
+		<ItemGroup>
+			<NugetPkg Include="PowerCollections\bin\$(Configuration)\*$(Version)*.nupkg" />
+			<Docs Include="Documentation\Help\Documentation.chm" />
+			<Src Include="**;" 
+				 Exclude="**\.vs\**;
+				 **\bin\**;
+				 **\obj\**;
+				 **\Help\**;
+				 Builds\**"
+			/>
+		</ItemGroup>
+		<Copy 
+			SourceFiles="@(NugetPkg)" 
+			DestinationFolder="Builds\Building\bin"
+		/>
+		<Copy 
+			SourceFiles="@(Docs)"
+			DestinationFolder="Builds\Building\doc"
+		/>
+		<CombinePath BasePath="Builds\Building\src" Paths="@(Src)" >
+			<Output TaskParameter="CombinedPaths" ItemName="SrcDest"/>
+		</CombinePath>
+		<Copy
+			Condition="$(IncludeSrc)"
+			SourceFiles="@(Src)"
+			DestinationFiles="@(SrcDest)"
+		/>
+		<PropertyGroup>
+			<Date>$([System.DateTime]::Now.ToString("yyyyMMdd"))</Date>
+		</PropertyGroup>
+		<PropertyGroup>
+			<BuildNumber>$([MSBuild]::Add($([System.Int32]::Parse($(BuildNumber))), 1))</BuildNumber>
+		</PropertyGroup>
+		<WriteLinesToFile File="BuildNumber.txt" Lines="$(BuildNumber)" Overwrite="true" />
+		<ZipDirectory SourceDirectory="Builds\Building" DestinationFile="Builds\Product_$(Date)_$(BuildNumber).zip" />
+		<RemoveDir Directories="Builds\Building" />
+	</Target>
+	
+	<Target Name="BuildProject">
+		<MSBuild 
+			Projects="PowerCollections\PowerCollections.csproj" 
+			Targets="Rebuild;Pack" 
+			Properties="Configuration=$(Configuration)" 
+		/>
+	</Target>
+	
+	<Target Name="BuildDocs">
+		<MSBuild 
+			Projects="Documentation\Documentation.shfbproj"
+			Properties="Configuration=$(Configuration)"
+		/>
+	</Target>
+	
+	<Target Name="PerformeTests">
+		<MSBuild Projects="PowerCollections.Tests\PowerCollections.Tests.csproj" />
+		<Exec Command="dotnet test">
+			<Output TaskParameter="ExitCode" PropertyName="ExitCode" />
+		</Exec>
+		<Message Text="Tests successed!" Importance="high" Condition="'$(ExitCode)' == '0'" />
+		<Message Text="Tests failed!" Importance="high" Condition="'$(ExitCode)' != '0'" />
+		<Error Text="Tests failed!" Condition="$(BreakOnTestsFail) And '$(ExitCode)' != '0'" />
+	</Target>
+</Project>
