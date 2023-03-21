@@ -1,0 +1,45 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: Release_demonstration
+
+on: workflow_dispatch
+
+jobs:
+  build_release:
+    runs-on: windows-latest
+    
+    permissions:
+      repository-projects: write
+      packages: write
+      contents: write
+      
+    steps:
+    
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+        
+    - name: Add package
+      run: dotnet pack -c Release
+      working-directory: PowerCollections
+      
+    - name: Publish package
+      run: dotnet nuget push ".\PowerCollections\bin\Release\chuchu2003*.nupkg" --api-key ${{ secrets.GITHUB_TOKEN }} --source "github_AC" --skip-duplicate
+      working-directory: PowerCollections
+      
+    - name: Get XML
+      id: getxml
+      uses: mavrosxristoforos/get-xml-info@1.1.1
+      with:
+        xml-file: 'PowerCollections\PowerCollections\PowerCollections.csproj'
+        xpath: '//Version'
+
+    - name: Package release
+      uses: ncipollo/release-action@v1.12.0
+      with:
+        artifacts: 'PowerCollections\PowerCollections\bin\Debug\chuchu2003.PowerCollections.${{ steps.getxml.outputs.info }}.nupkg'
+        tag: 'v${{ steps.getxml.outputs.info }}'
+        token:  ${{ secrets.GITHUB_TOKEN }} 
